@@ -1,6 +1,6 @@
 # Automate your time logging in JIRA
 
-Just a simple script to give you a head start at automating your time sheet submission in JIRA.
+Just a simple script to give you a head start at automating your timesheet submission in JIRA.
 
 ## Prerequisites
 
@@ -27,3 +27,10 @@ Run the script daily as follows (or just create a simple cronjob):
 ```shell
 python3 log_work.py
 ```
+
+## Considerations
+
+A few things to consider before fully relying on the script:
+
+- There's only support for logging time on a daily basis
+- Running the script more than once per day results in multiple time logs for that day
