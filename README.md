@@ -22,10 +22,37 @@ pip3 install -r requirements.txt
 
 ## Running the script
 
-Run the script daily as follows (or just create a simple cronjob):
+> [!NOTE]
+> To avoid logging time twice, the script will automatically check if time has been logged for a particular day already.
+
+### Daily
+
+You can run the script daily as follows (or just create a simple cronjob):
 
 ```shell
 python3 log_work.py
+```
+
+The above is identical to:
+
+```shell
+python3 log_work.py --today
+```
+
+### Logging time for this week
+
+In case you want to log time on a weekly basis, usually on a Friday, here's how you can do that:
+
+```shell
+python3 log_work.py --this-week
+```
+
+### Logging time for last week
+
+In case you forgot to log time for last week, you can run:
+
+```shell
+python3 log_work.py --last-week
 ```
 
 ## Considerations
