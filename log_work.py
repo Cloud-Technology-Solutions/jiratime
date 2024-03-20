@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 import os
 from datetime import date, timedelta
 
@@ -7,6 +8,9 @@ import requests
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logging.basicConfig(level="INFO")
+log = logging.getLogger("log_work")
 
 ATLASSIAN_URL = "https://appsbroker.atlassian.net"
 USER_EMAIL = ""
@@ -28,12 +32,14 @@ JIRA_TICKETS = [
     {"id": "NW-55", "daily_time_spent": ["0", "0", "0", "0", "30m"]},
 ]
 
-headers = {"Accept": "application/json", "Content-Type": "application/json"}
+# Helpers
+REQUEST_HEADERS = {"Accept": "application/json", "Content-Type": "application/json"}
+REQUEST_TIMEOUT = 10
 
 
 def handle_errors(response, message) -> dict:
     if response.status_code in set([200, 201]):
-        # print(json.dumps(response.json(), indent=4))
+        log.debug(json.dumps(response.json(), indent=4))
         return response.json()
 
     try:
@@ -51,9 +57,10 @@ def get_user_account_id() -> str:
 
     resp = requests.get(
         url,
-        headers=headers,
+        headers=REQUEST_HEADERS,
         params={"query": USER_EMAIL},
         auth=(USER_EMAIL, API_TOKEN),
+        timeout=REQUEST_TIMEOUT,
     )
     result = handle_errors(resp, f"Failed to get account ID for your user")
 
@@ -66,8 +73,9 @@ def get_worklog(ticket_id: str, iso_date: date) -> dict:
 
     resp = requests.get(
         worklog_url,
-        headers=headers,
+        headers=REQUEST_HEADERS,
         auth=(USER_EMAIL, API_TOKEN),
+        timeout=REQUEST_TIMEOUT,
     )
     result = handle_errors(resp, f"Failed to get worklogs from {ticket_id}")
 
@@ -80,7 +88,7 @@ def get_worklog(ticket_id: str, iso_date: date) -> dict:
         )
 
     worklog = list(filter(date_filter, result["worklogs"]))
-    # print(json.dumps(worklog, indent=4))
+    log.debug(json.dumps(worklog, indent=4))
     return worklog
 
 
@@ -100,7 +108,7 @@ def log_work(ticket: dict, iso_date: date):
         return
 
     if is_work_already_logged(ticket_id, iso_date):
-        print(f"Work is already logged in {ticket_id}")
+        log.info(f"Work is already logged in {ticket_id}")
         return
 
     payload = {
@@ -122,12 +130,13 @@ def log_work(ticket: dict, iso_date: date):
 
     resp = requests.post(
         worklog_url,
-        headers=headers,
+        headers=REQUEST_HEADERS,
         data=json.dumps(payload),
         auth=(USER_EMAIL, API_TOKEN),
+        timeout=REQUEST_TIMEOUT,
     )
     handle_errors(resp, f"Failed to log work in {ticket_id} for {iso_date}")
-    print(f"Logged {time_spent} in {ticket_id}")
+    log.info(f"Logged {time_spent} in {ticket_id}")
 
 
 def main():
@@ -142,6 +151,7 @@ to execute a full weekly schedule for this / last week.
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter, description=doc
     )
+    parser.add_argument("--debug", action="store_true", default=False, help="Enable debug mode")
     period = parser.add_mutually_exclusive_group(required=False)
     period.add_argument(
         "--today", action="store_true", help="Log work in your tickets only for today"
@@ -160,6 +170,8 @@ to execute a full weekly schedule for this / last week.
     )
     args = parser.parse_args()
 
+    log.setLevel("DEBUG" if args.debug else "INFO")
+
     base_date = date.today()
     date_list = [base_date]
     if args.this_week:
@@ -171,7 +183,7 @@ to execute a full weekly schedule for this / last week.
 
     for day in date_list:
         iso_date = day.isoformat()
-        print(f"Logging work for: {iso_date}")
+        log.info(f"Logging work for: {iso_date}")
         for ticket in JIRA_TICKETS:
             log_work(ticket, day)
 
