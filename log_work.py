@@ -1,6 +1,7 @@
+import argparse
 import json
 import os
-from datetime import date
+from datetime import date, timedelta
 
 import requests
 from dotenv import load_dotenv
@@ -27,10 +28,6 @@ JIRA_TICKETS = [
     {"id": "NW-55", "daily_time_spent": ["0", "0", "0", "0", "30m"]},
 ]
 
-# Date helpers
-TODAYS_DATE = date.today()
-WEEKDAY = date.today().weekday()
-
 headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
 
@@ -49,6 +46,21 @@ def handle_errors(response, message) -> dict:
     raise Exception(f"{message}: {error_codes}\n" f"{error_messages}")
 
 
+def get_user_account_id() -> str:
+    url = f"{ATLASSIAN_URL}/rest/api/3/groupuserpicker"
+
+    resp = requests.get(
+        url,
+        headers=headers,
+        params={"query": USER_EMAIL},
+        auth=(USER_EMAIL, API_TOKEN),
+    )
+    result = handle_errors(resp, f"Failed to get account ID for your user")
+
+    user_account_id = result["users"]["users"][0]["accountId"]
+    return user_account_id
+
+
 def get_worklog(ticket_id: str, iso_date: date) -> dict:
     worklog_url = f"{ATLASSIAN_URL}/rest/api/3/issue/{ticket_id}/worklog"
 
@@ -62,27 +74,32 @@ def get_worklog(ticket_id: str, iso_date: date) -> dict:
     # Filtering all results just because the API doesn't work properly
     # in case you'd want filtered results startAfter and startBefore query params
     def date_filter(worklog: dict) -> list:
-        return worklog["started"].startswith(iso_date.isoformat())
+        return (
+            worklog["started"].startswith(iso_date.isoformat())
+            and worklog["author"]["accountId"] == get_user_account_id()
+        )
 
     worklog = list(filter(date_filter, result["worklogs"]))
     # print(json.dumps(worklog, indent=4))
-
     return worklog
 
 
-def is_already_logged(ticket_id: str, iso_date: date) -> bool:
+def is_work_already_logged(ticket_id: str, iso_date: date) -> bool:
     worklogs = get_worklog(ticket_id, iso_date)
 
     return len(worklogs) > 0
 
 
-def log_work(ticket_id: str, iso_date: date, time_spent: str):
+def log_work(ticket: dict, iso_date: date):
+    weekday = iso_date.weekday()
+    ticket_id = ticket["id"]
+    time_spent = ticket["daily_time_spent"][weekday]
     worklog_url = f"{ATLASSIAN_URL}/rest/api/3/issue/{ticket_id}/worklog"
 
     if time_spent in set([0, "0", "0h"]):
         return
 
-    if is_already_logged(ticket_id, iso_date):
+    if is_work_already_logged(ticket_id, iso_date):
         print(f"Work is already logged in {ticket_id}")
         return
 
@@ -114,13 +131,49 @@ def log_work(ticket_id: str, iso_date: date, time_spent: str):
 
 
 def main():
-    print(f"Logging work for: {TODAYS_DATE}")
-    for ticket in JIRA_TICKETS:
-        log_work(
-            ticket["id"],
-            TODAYS_DATE,
-            ticket["daily_time_spent"][WEEKDAY],
-        )
+    doc = """
+Log your work in JIRA
+
+By default the script will log time in all of your tickets ONLY FOR TODAY.
+Use the following arguments to change the behavior and specify if you need
+to execute a full weekly schedule for this / last week.
+    """
+
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter, description=doc
+    )
+    period = parser.add_mutually_exclusive_group(required=False)
+    period.add_argument(
+        "--today", action="store_true", help="Log work in your tickets only for today"
+    )
+    period.add_argument(
+        "--this-week",
+        action="store_true",
+        help="Execute the full weekly schedule for THIS week. This would log \
+            time for every day of that week for all of your tickets.",
+    )
+    period.add_argument(
+        "--last-week",
+        action="store_true",
+        help="Execute the full weekly schedule for LAST week. This would log \
+            time for every day of that week for all of your tickets.",
+    )
+    args = parser.parse_args()
+
+    base_date = date.today()
+    date_list = [base_date]
+    if args.this_week:
+        base_date = date.today() - timedelta(days=date.today().weekday())
+        date_list = [base_date + timedelta(days=x) for x in range(5)]
+    if args.last_week:
+        base_date = date.today() - timedelta(days=date.today().weekday() + 7)
+        date_list = [base_date + timedelta(days=x) for x in range(5)]
+
+    for day in date_list:
+        iso_date = day.isoformat()
+        print(f"Logging work for: {iso_date}")
+        for ticket in JIRA_TICKETS:
+            log_work(ticket, day)
 
 
 if __name__ == "__main__":
