@@ -29,12 +29,13 @@ sample is provided in `test/sample_config.yaml`. You can either save this as
 
 ## Usage
 
-> [!NOTE]
-> To avoid logging time twice, `jiratime` will automatically check if time has
-> been logged for a particular day already.
+> [!TIP]
+> `jiratime` will automatically check if time has been logged for a particular
+> day, this way you won't have to worry about logging time twice.
 
-Note that by default `jiratime` does not actually submit time values. To tell
-it to actually submit time, pass in the `-y` flag.
+> [!NOTE]
+> By default `jiratime` does not actually submit time values. To tell it to
+> actually submit time, pass in the `-y` flag.
 
 ### Daily
 
