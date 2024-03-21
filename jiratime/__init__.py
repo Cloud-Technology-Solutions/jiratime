@@ -96,12 +96,17 @@ def log_work(ticket: dict, iso_date: date, email: str, yes: bool):
         log.info(f"Work is already logged in {ticket_id}")
         return
 
+    if "comment" in ticket:
+        comment = ticket['comment']
+    else:
+        comment = "Logging some time for today"
+
     payload = {
         "comment": {
             "content": [
                 {
                     "content": [
-                        {"text": "Logging some time for today", "type": "text"}
+                        {"text": comment, "type": "text"}
                     ],
                     "type": "paragraph",
                 }
