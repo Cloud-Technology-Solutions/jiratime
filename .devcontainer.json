@@ -1,0 +1,22 @@
+{
+  "name": "python",
+  "image": "mcr.microsoft.com/vscode/devcontainers/base:debian-12",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers-contrib/features/markdownlint-cli:1": {}
+  },
+  "postAttachCommand": {
+    "poetry": "pipx install poetry",
+    "pre-commit": "pipx install pre-commit && pre-commit install",
+    "detect-secrets": "pipx install detect-secrets"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "tamasfe.even-better-toml",
+        "DavidAnson.vscode-markdownlint",
+        "redhat.vscode-yaml"
+      ]
+    }
+  }
+}
