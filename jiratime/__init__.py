@@ -72,10 +72,9 @@ def is_work_already_logged(ticket_id: str, iso_date: date, email: str) -> bool:
     # Filtering all results just because the API doesn't work properly
     # in case you'd want filtered results startAfter and startBefore query params
     def date_filter(worklog: dict) -> list:
-        return (
-            worklog["started"].startswith(iso_date.isoformat())
-            and worklog["author"]["accountId"] == get_user_account_id(email)
-        )
+        return worklog["started"].startswith(iso_date.isoformat()) and worklog[
+            "author"
+        ]["accountId"] == get_user_account_id(email)
 
     worklog = list(filter(date_filter, result["worklogs"]))
     log.debug(json.dumps(worklog, indent=4))
@@ -97,7 +96,7 @@ def log_work(ticket: dict, iso_date: date, email: str, yes: bool):
         return
 
     if "comment" in ticket:
-        comment = ticket['comment']
+        comment = ticket["comment"]
     else:
         comment = "Logging some time for today"
 
@@ -105,9 +104,7 @@ def log_work(ticket: dict, iso_date: date, email: str, yes: bool):
         "comment": {
             "content": [
                 {
-                    "content": [
-                        {"text": comment, "type": "text"}
-                    ],
+                    "content": [{"text": comment, "type": "text"}],
                     "type": "paragraph",
                 }
             ],
@@ -131,8 +128,7 @@ def log_work(ticket: dict, iso_date: date, email: str, yes: bool):
         log.info(
             "NOTE: jiratime was run without -y, so no timesheets have "
             "actually been submitted. Re-run with the -y flag to submit time."
-            )
-
+        )
 
     log.info(f"Logged {time_spent} in {ticket_id}")
 
@@ -149,9 +145,22 @@ to execute a full weekly schedule for this / last week.
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter, description=doc
     )
-    parser.add_argument("--config", "-c", default=f"{os.path.expanduser('~')}/.timesheet.yaml", help="Config file")
-    parser.add_argument("--debug", action="store_true", default=False, help="Enable debug mode")
-    parser.add_argument("--yes", "-y", default=False, help="Actually submit timesheet")
+    parser.add_argument(
+        "--config",
+        "-c",
+        default=f"{os.path.expanduser('~')}/.timesheet.yaml",
+        help="Config file",
+    )
+    parser.add_argument(
+        "--debug", action="store_true", default=False, help="Enable debug mode"
+    )
+    parser.add_argument(
+        "--yes",
+        "-y",
+        action="store_true",
+        default=False,
+        help="Actually submit timesheet",
+    )
     period = parser.add_mutually_exclusive_group(required=False)
     period.add_argument(
         "--today", action="store_true", help="Log work in your tickets only for today"
@@ -175,8 +184,7 @@ to execute a full weekly schedule for this / last week.
     with open(args.config, "r") as stream:
         timesheet_config = yaml.safe_load(stream)
 
-    email = timesheet_config['email']
-
+    email = timesheet_config["email"]
 
     base_date = date.today()
     date_list = [base_date]
@@ -190,5 +198,5 @@ to execute a full weekly schedule for this / last week.
     for day in date_list:
         iso_date = day.isoformat()
         log.info(f"Logging work for: {iso_date}")
-        for ticket in timesheet_config['hours']:
+        for ticket in timesheet_config["hours"]:
             log_work(ticket, day, email, args.yes)
