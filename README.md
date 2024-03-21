@@ -5,7 +5,7 @@ submission in JIRA.
 
 ## Prerequisites
 
-1.  A JIRA API token is needed for the script to be able to authenticate on
+1.  A JIRA API token is needed for `jiratime` to be able to authenticate on
     your behalf. You can create a JIRA API token from here: [Create and manage
     API tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
 2.  Set the API key as an environment variable:
@@ -22,18 +22,23 @@ pipx install .
 
 ## Configuration
 
-*Before* running `jiratime` for the first time, edit the script and define
-the JIRA tickets and the daily amount of hours (from Mon to Fri).
+`jiratime` requires a configuration file to set your email address and define
+the JIRA tickets and the daily amount of hours (from Monday to Friday). A
+sample is provided in `test/sample_config.yaml`. You can either save this as
+`~/.timesheets.yaml` or pass the config file in each time with `-c <filename`>.
 
-## Running the script
+## Usage
 
 > [!NOTE]
-> To avoid logging time twice, the script will automatically check if time has
+> To avoid logging time twice, `jiratime` will automatically check if time has
 > been logged for a particular day already.
+
+Note that by default `jiratime` does not actually submit time values. To tell
+it to actually submit time, pass in the `-y` flag.
 
 ### Daily
 
-You can run the script daily as follows (or just create a simple cronjob):
+You can run `jiratime` daily as follows (or just create a simple cronjob):
 
 ```sh
 jiratime
@@ -62,10 +67,8 @@ In case you forgot to log time for last week, you can run:
 jiratime --last-week
 ```
 
-## Considerations
+## TODO
 
-A few things to consider before fully relying on the script:
-
--   There's only support for logging time on a daily basis
--   Running the script more than once per day results in multiple time logs for
+-   Running `jiratime` more than once per day results in multiple time logs for
     that day
+-   Convert to use `click` rather than `argparse` for a more featureful CLI
