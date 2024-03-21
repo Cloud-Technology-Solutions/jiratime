@@ -186,7 +186,3 @@ to execute a full weekly schedule for this / last week.
         log.info(f"Logging work for: {iso_date}")
         for ticket in JIRA_TICKETS:
             log_work(ticket, day)
-
-
-if __name__ == "__main__":
-    main()
