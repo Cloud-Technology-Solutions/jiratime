@@ -122,6 +122,13 @@ def log_work(ticket: dict, iso_date: date, email: str, yes: bool):
             timeout=REQUEST_TIMEOUT,
         )
         handle_errors(resp, f"Failed to log work in {ticket_id} for {iso_date}")
+    else:
+        log.info(
+            "NOTE: jiratime was run without -y, so no timesheets have "
+            "actually been submitted. Re-run with the -y flag to submit time."
+            )
+
+
     log.info(f"Logged {time_spent} in {ticket_id}")
 
 
