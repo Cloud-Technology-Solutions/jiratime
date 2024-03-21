@@ -1,0 +1,41 @@
+# A list of JIRA tickets which are assigned to you for tracking/logging time. e.g. IACC-38, IP-54, SSS-312 etc.
+# Define a total amount of time per day (from Mon to Fri) you"re spending on each ticket:
+#   hours (e.g. "6h")
+#   minutes (e.g. "30m")
+#   a combination of both (e.g. "3h 30m")
+
+email: chris.cunningham@cts.co
+hours:
+  - # MAIN PROJECT WORK
+    id: TSSGTP0-2
+    daily_time_spent:
+      - 7h 30m
+      - 7h 30m
+      - 7h 30m
+      - 0
+      - 6h
+    comment: 'Worked on GitHub group IAM proposal document.'
+  - # Holiday / Sick / Compassionate etc.
+    id: NBL-2
+    daily_time_spent:
+      - 0
+      - 0
+      - 0
+      - 7h 30m
+      - 0
+  - # Training / certifications work incl.
+    id: IACT-5
+    daily_time_spent:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 1h
+  - # Tech Talks
+    id: NW-55
+    daily_time_spent:
+      - 0
+      - 0
+      - 0
+      - 0
+      - 30m
