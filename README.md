@@ -72,3 +72,4 @@ jiratime --last-week
 -   Running `jiratime` more than once per day results in multiple time logs for
     that day
 -   Convert to use `click` rather than `argparse` for a more featureful CLI
+-   Add an interactive mode
