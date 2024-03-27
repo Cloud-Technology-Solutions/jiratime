@@ -48,10 +48,31 @@ def get_user_account_id(email: str) -> str:
     )
     result = handle_errors(resp, f"Failed to get account ID for your user")
 
-    log.debug(result)
-
     user_account_id = result["users"]["users"][0]["accountId"]
+
     return user_account_id
+
+
+def search_for_ticket(ticket_summary: str, email: str):
+    log.debug("Searching for ticket with summary:", ticket_summary)
+    url = f"{ATLASSIAN_URL}/rest/api/3/issue/picker"
+    params = {
+        "currentJQL": f"summary ~ '{ticket_summary}'"
+    }
+
+    resp = requests.get(
+        url,
+        headers=REQUEST_HEADERS,
+        params=params,
+        auth=(email, API_TOKEN),
+        timeout=REQUEST_TIMEOUT,
+    )
+    result = handle_errors(resp, f"Failed to search for a ticket with summary: {ticket_summary}")
+
+    first_match = result['sections'][0]['issues'][0]
+    log.debug("Found match:", first_match)
+
+    return first_match['key']
 
 
 def is_work_already_logged(ticket_id: str, iso_date: date, email: str) -> bool:
@@ -77,14 +98,17 @@ def is_work_already_logged(ticket_id: str, iso_date: date, email: str) -> bool:
         ]["accountId"] == get_user_account_id(email)
 
     worklog = list(filter(date_filter, result["worklogs"]))
-    log.debug(json.dumps(worklog, indent=4))
+    already_logged = len(worklog) > 0
+    log.debug("Work already logged:", str(already_logged))
 
-    return len(worklog) > 0
+    return already_logged
 
 
 def log_work(ticket: dict, iso_date: date, email: str, yes: bool):
     weekday = iso_date.weekday()
     ticket_id = ticket["id"]
+    if ' ' in ticket_id:
+        ticket_id = search_for_ticket(ticket_id, email)
     time_spent = ticket["daily_time_spent"][weekday]
     worklog_url = f"{ATLASSIAN_URL}/rest/api/3/issue/{ticket_id}/worklog"
 
