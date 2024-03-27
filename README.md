@@ -25,7 +25,7 @@ pipx install .
 `jiratime` requires a configuration file to set your email address and define
 the JIRA tickets and the daily amount of hours (from Monday to Friday). A
 sample is provided in `test/sample_config.yaml`. You can either save this as
-`~/.timesheets.yaml` or pass the config file in each time with `-c <filename`>.
+`~/.timesheet.yaml` or pass the config file in each time with `-c <filename>`.
 
 ## Usage
 
