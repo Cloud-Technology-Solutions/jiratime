@@ -27,7 +27,7 @@ hours:
       - 0
   - # Leadership time (for 1-2-1s).
     id: NW-49
-    daily time spent:
+    daily_time_spent:
       - 0
       - 0
       - 0
@@ -35,7 +35,7 @@ hours:
       - 8h
   - # Improvement initiatives (internal projects etc. without their own code).
     id: NW-60
-    daily time spent:
+    daily_time_spent:
       - 8h
       - 0
       - 0
