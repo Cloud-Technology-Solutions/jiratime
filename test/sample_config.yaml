@@ -10,50 +10,20 @@ email: your.email@cts.co
 hours:
   - # Main billable work.
     id: FILL-IN-JIRA-STUB
-    daily_time_spent:
-      - 8h
-      - 8h
-      - 8h
-      - 8h
-      - 0
+    daily_time_spent: ["8h", "8h", "8h", "8h", "0"]
     comment: 'Daily billable work.'
   - # Leave (including bank holidays, birthdays etc.).
-    id: NBL-2
-    daily_time_spent:
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
+    id: "NBL-1000 | Leave"
+    daily_time_spent: ["0", "0", "0", "0", "0"]
   - # Leadership time (for 1-2-1s).
     id: NW-49
-    daily time spent:
-      - 0
-      - 0
-      - 0
-      - 0
-      - 8h
+    daily_time_spent: ["0", "0", "0", "0", "8h"]
   - # Improvement initiatives (internal projects etc. without their own code).
     id: NW-60
-    daily time spent:
-      - 8h
-      - 0
-      - 0
-      - 0
-      - 0
+    daily_time_spent: ["8h", "0", "0", "0", "0"]
   - # Booked training days.
-    id: IACT-5
-    daily_time_spent:
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
+    id: "IACT-1000 | Training"
+    daily_time_spent: ["0", "0", "0", "0", "0"]
   - # Tech Talks.
     id: NW-55
-    daily_time_spent:
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
+    daily_time_spent: ["0", "0", "0", "0", "0"]
