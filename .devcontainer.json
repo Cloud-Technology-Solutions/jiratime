@@ -6,9 +6,9 @@
     "ghcr.io/devcontainers-contrib/features/markdownlint-cli:1": {}
   },
   "postAttachCommand": {
-    "poetry": "pipx install poetry",
+    "poetry": "pipx install poetry && poetry install",
     "pre-commit": "pipx install pre-commit && pre-commit install",
-    "detect-secrets": "pipx install detect-secrets"
+    "detect-secrets": "pipx install detect-secrets" // pragma: allowlist secret
   },
   "customizations": {
     "vscode": {
