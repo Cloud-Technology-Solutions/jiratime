@@ -17,10 +17,10 @@ hours:
     daily_time_spent: ["0", "0", "0", "0", "0"]
   - # Leadership time (for 1-2-1s).
     id: NW-49
-    daily time spent: ["0", "0", "0", "0", "8h"]
+    daily_time_spent: ["0", "0", "0", "0", "8h"]
   - # Improvement initiatives (internal projects etc. without their own code).
     id: NW-60
-    daily time spent: ["8h", "0", "0", "0", "0"]
+    daily_time_spent: ["8h", "0", "0", "0", "0"]
   - # Booked training days.
     id: "IACT-1000 | Training"
     daily_time_spent: ["0", "0", "0", "0", "0"]
