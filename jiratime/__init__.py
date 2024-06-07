@@ -7,6 +7,7 @@ from datetime import date, timedelta
 
 import requests
 from dotenv import load_dotenv
+from rich.progress import Console, Progress
 
 load_dotenv()
 
@@ -56,9 +57,7 @@ def get_user_account_id(email: str) -> str:
 def search_for_ticket(ticket_summary: str, email: str):
     log.debug("Searching for ticket with summary:", ticket_summary)
     url = f"{ATLASSIAN_URL}/rest/api/3/issue/picker"
-    params = {
-        "currentJQL": f"summary ~ '{ticket_summary}'"
-    }
+    params = {"currentJQL": f"summary ~ '{ticket_summary}'"}
 
     resp = requests.get(
         url,
@@ -67,12 +66,14 @@ def search_for_ticket(ticket_summary: str, email: str):
         auth=(email, API_TOKEN),
         timeout=REQUEST_TIMEOUT,
     )
-    result = handle_errors(resp, f"Failed to search for a ticket with summary: {ticket_summary}")
+    result = handle_errors(
+        resp, f"Failed to search for a ticket with summary: {ticket_summary}"
+    )
 
-    first_match = result['sections'][0]['issues'][0]
+    first_match = result["sections"][0]["issues"][0]
     log.debug("Found match:", first_match)
 
-    return first_match['key']
+    return first_match["key"]
 
 
 def is_work_already_logged(ticket_id: str, iso_date: date, email: str) -> bool:
@@ -104,20 +105,31 @@ def is_work_already_logged(ticket_id: str, iso_date: date, email: str) -> bool:
     return already_logged
 
 
-def log_work(ticket: dict, iso_date: date, email: str, yes: bool):
+def log_work(
+    ticket: dict,
+    iso_date: date,
+    email: str,
+    yes: bool,
+    progress: Progress,
+    task_id: str,
+):
     weekday = iso_date.weekday()
     ticket_id = ticket["id"]
-    if ' ' in ticket_id:
+    if " " in ticket_id:
         ticket_id = search_for_ticket(ticket_id, email)
+    progress.update(task_id, advance=0.3)
     time_spent = ticket["daily_time_spent"][weekday]
     worklog_url = f"{ATLASSIAN_URL}/rest/api/3/issue/{ticket_id}/worklog"
 
     if time_spent in set([0, "0", "0h"]):
+        progress.update(task_id, advance=0.7)
         return
 
     if is_work_already_logged(ticket_id, iso_date, email):
-        log.info(f"Work is already logged in {ticket_id}")
+        progress.log(f"[{iso_date}] Work is already logged in {ticket_id}")
+        progress.update(task_id, advance=0.7)
         return
+    progress.update(task_id, advance=0.2)
 
     if "comment" in ticket:
         comment = ticket["comment"]
@@ -148,13 +160,9 @@ def log_work(ticket: dict, iso_date: date, email: str, yes: bool):
             timeout=REQUEST_TIMEOUT,
         )
         handle_errors(resp, f"Failed to log work in {ticket_id} for {iso_date}")
-    else:
-        log.info(
-            "NOTE: jiratime was run without -y, so no timesheets have "
-            "actually been submitted. Re-run with the -y flag to submit time."
-        )
+    progress.update(task_id, advance=0.5)
 
-    log.info(f"Logged {time_spent} in {ticket_id}")
+    progress.log(f"[{iso_date}] Logged {time_spent} in {ticket_id}")
 
 
 def main():
@@ -219,8 +227,27 @@ to execute a full weekly schedule for this / last week.
         base_date = date.today() - timedelta(days=date.today().weekday() + 7)
         date_list = [base_date + timedelta(days=x) for x in range(5)]
 
-    for day in date_list:
-        iso_date = day.isoformat()
-        log.info(f"Logging work for: {iso_date}")
-        for ticket in timesheet_config["hours"]:
-            log_work(ticket, day, email, args.yes)
+    with Progress() as progress:
+        timesheet_progress = progress.add_task(
+            "[green]Submitting timesheet...", total=len(date_list)
+        )
+        if not args.yes:
+            progress.print(
+                "\n[red]NOTE: jiratime was run without -y, so no timesheets have "
+                "actually been submitted. Re-run with the -y flag to submit time.\n"
+            )
+        for day in date_list:
+            progress.print("-" * os.get_terminal_size().columns)
+            iso_date = day.isoformat()
+            day_progress = progress.add_task(
+                f"[green]Logging work for {iso_date}",
+                total=len(timesheet_config["hours"]),
+            )
+            for ticket in timesheet_config["hours"]:
+                log_work(ticket, day, email, args.yes, progress, day_progress)
+            progress.advance(day_progress)
+            progress.update(timesheet_progress, advance=1)
+
+
+if __name__ == "__main__":
+    main()

@@ -3,6 +3,8 @@
 Just a simple script to give you a head start at automating your timesheet
 submission in JIRA.
 
+[![asciicast](https://asciinema.org/a/MWVw0e8B1GCWrml2UuqF0EkXa.svg)](https://asciinema.org/a/MWVw0e8B1GCWrml2UuqF0EkXa)
+
 ## Prerequisites
 
 1.  A JIRA API token is needed for `jiratime` to be able to authenticate on
