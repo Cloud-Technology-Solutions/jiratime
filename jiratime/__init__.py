@@ -237,7 +237,11 @@ to execute a full weekly schedule for this / last week.
                 "actually been submitted. Re-run with the -y flag to submit time.\n"
             )
         for day in date_list:
-            progress.print("-" * os.get_terminal_size().columns)
+            try:
+                term_size_columns = os.get_terminal_size().columns
+            except OSError:
+                term_size_columns = 80
+            progress.print("-" * term_size_columns)
             iso_date = day.isoformat()
             day_progress = progress.add_task(
                 f"[green]Logging work for {iso_date}",
