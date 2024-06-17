@@ -13,7 +13,7 @@ submission in JIRA.
 2.  Set the API key as an environment variable:
 
     ```sh
-    export API_TOKEN=<insert JIRA token>
+    export JIRA_API_TOKEN=<insert JIRA token>
     ```
 
 ## Installation
