@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "jiratime"
-version = "0.1.1"
+version = "0.1.0"
 description = "Submits time for worked hours in CTS Appsbroker Jira."
 authors = ["Svetlin Zamfirov <svetlin.zamfirov@cts.co>"]
 readme = "README.md"
