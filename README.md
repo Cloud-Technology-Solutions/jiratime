@@ -1,3 +1,5 @@
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+
 # `jiratime` README
 
 Just a simple script to give you a head start at automating your timesheet
@@ -13,7 +15,7 @@ submission in JIRA.
 2.  Set the API key as an environment variable:
 
     ```sh
-    export API_TOKEN=<insert JIRA token>
+    export JIRA_API_TOKEN=<insert JIRA token>
     ```
 
 ## Installation

@@ -15,7 +15,7 @@ logging.basicConfig(level="INFO")
 log = logging.getLogger("log_work")
 
 ATLASSIAN_URL = "https://appsbroker.atlassian.net"
-API_TOKEN = os.getenv("API_TOKEN")
+JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
 
 # Helpers
 REQUEST_HEADERS = {"Accept": "application/json", "Content-Type": "application/json"}
@@ -44,7 +44,7 @@ def get_user_account_id(email: str) -> str:
         url,
         headers=REQUEST_HEADERS,
         params={"query": email},
-        auth=(email, API_TOKEN),
+        auth=(email, JIRA_API_TOKEN),
         timeout=REQUEST_TIMEOUT,
     )
     result = handle_errors(resp, f"Failed to get account ID for your user")
@@ -63,7 +63,7 @@ def search_for_ticket(ticket_summary: str, email: str):
         url,
         headers=REQUEST_HEADERS,
         params=params,
-        auth=(email, API_TOKEN),
+        auth=(email, JIRA_API_TOKEN),
         timeout=REQUEST_TIMEOUT,
     )
     result = handle_errors(
@@ -86,7 +86,7 @@ def is_work_already_logged(ticket_id: str, iso_date: date, email: str) -> bool:
     resp = requests.get(
         worklog_url,
         headers=REQUEST_HEADERS,
-        auth=(email, API_TOKEN),
+        auth=(email, JIRA_API_TOKEN),
         timeout=REQUEST_TIMEOUT,
     )
     result = handle_errors(resp, f"Failed to get worklogs from {ticket_id}")
@@ -156,7 +156,7 @@ def log_work(
             worklog_url,
             headers=REQUEST_HEADERS,
             data=json.dumps(payload),
-            auth=(email, API_TOKEN),
+            auth=(email, JIRA_API_TOKEN),
             timeout=REQUEST_TIMEOUT,
         )
         handle_errors(resp, f"Failed to log work in {ticket_id} for {iso_date}")
