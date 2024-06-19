@@ -1,0 +1,3 @@
+{
+  "extends": ["github>Cloud-Technology-Solutions/jiratime:renovate-default"]
+}
