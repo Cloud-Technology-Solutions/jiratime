@@ -1,4 +1,6 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+![GitHub Release](https://img.shields.io/github/v/release/Cloud-Technology-Solutions/jiratime)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/Cloud-Technology-Solutions/jiratime/main)
 
 # `jiratime` README
 
