@@ -1,3 +1,5 @@
 {
-  "extends": ["github>Cloud-Technology-Solutions/jiratime:renovate-default"]
+  "extends": [
+    "github>Cloud-Technology-Solutions/github-gardener:renovate-default"
+  ]
 }
