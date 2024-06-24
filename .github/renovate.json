@@ -1,5 +1,5 @@
 {
   "extends": [
-    "local>Cloud-Technology-Solutions/github-gardener:renovate-default"
+    "local>Cloud-Technology-Solutions/renovate-config:renovate-default"
   ]
 }

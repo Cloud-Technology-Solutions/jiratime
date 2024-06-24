@@ -18,7 +18,7 @@ on:
 
 jobs:
   call-workflow:
-    uses: Cloud-Technology-Solutions/github-gardener/.github/workflows/renovate-bot.yml@main
+    uses: Cloud-Technology-Solutions/renovate-config/.github/workflows/renovate-bot.yml@main
     with:
       logLevel: ${{ inputs.logLevel || 'info' }}
       overrideSchedule: ${{ github.event.inputs.overrideSchedule == 'true' && '{''schedule'':null}' || '' }}
