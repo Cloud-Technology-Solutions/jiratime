@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/Cloud-Technology-Solutions/jiratime/compare/v0.1.0...v1.0.0) (2024-06-28)
+
+
+### Miscellaneous Chores
+
+* release 1.0.0 ([#26](https://github.com/Cloud-Technology-Solutions/jiratime/issues/26)) ([9692039](https://github.com/Cloud-Technology-Solutions/jiratime/commit/969203926f804e5a989547ba1e56a2d3988f9e40))
+
 ## 0.1.0 (2024-06-18)
 
 
